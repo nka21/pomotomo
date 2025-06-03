@@ -1,0 +1,177 @@
+openapi: 3.0.0
+info:
+  title: Pomodoro Room API
+  version: 1.0.0
+  description: API specification for a simple shared Pomodoro timer app
+
+servers:
+  - url: https://your-pomodoro-api.com
+
+components:
+  schemas:
+    TimerState:
+      type: object
+      properties:
+        startedAt:
+          type: string
+          format: date-time
+        phase:
+          type: string
+          enum: [work, break, long_break]
+        phaseSeconds:
+          type: integer
+        cycle:
+          type: integer
+        participants:
+          type: integer
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+
+paths:
+  /rooms:
+    post:
+      summary: Create a new room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roomName:
+                  type: string
+                  maxLength: 20
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Success or error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      roomName:
+                        type: string
+                  - $ref: '#/components/schemas/Error'
+  /rooms/{roomName}:
+    get:
+      summary: Get info of an existing room
+      parameters:
+        - name: roomName
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 20
+      responses:
+        '200':
+          description: Room info or error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      exists:
+                        type: boolean
+                      participants:
+                        type: integer
+                      timerState:
+                        $ref: '#/components/schemas/TimerState'
+                  - $ref: '#/components/schemas/Error'
+  /rooms/{roomName}/join:
+    post:
+      summary: Join a room
+      parameters:
+        - name: roomName
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 20
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Join result
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      timerState:
+                        $ref: '#/components/schemas/TimerState'
+                  - $ref: '#/components/schemas/Error'
+  /rooms/{roomName}/leave:
+    post:
+      summary: Leave a room
+      parameters:
+        - name: roomName
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 20
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Leave result
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                  - $ref: '#/components/schemas/Error'
+  /rooms/{roomName}/timer:
+    get:
+      summary: Get current timer info of a room
+      parameters:
+        - name: roomName
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 20
+      responses:
+        '200':
+          description: Timer info or error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/TimerState'
+                  - $ref: '#/components/schemas/Error'
