@@ -1,5 +1,4 @@
 # ポモとも!
-
 ## 🎯 サービス概要
 ### 目的：
 友達や仲間と“部屋”を作り、同じタイミングでポモドーロ・テクニックに基づいた作業・休憩サイクルを共有できる、超シンプルなタイマーWebアプリ。
@@ -24,22 +23,11 @@
 - 進行状況・残り時間・部屋の参加人数を常に表示
 - リロード時はホーム画面に戻す
 ## 💻 技術選定
-### フロントエンド:
-- React（v19）+ TypeScript
-- 状態管理: Hooks + 必要に応じてJotai
+- Next.js(15) + TypeScript
 - パッケージマネージャー: pnpm
-- Viteで構築
-### バックエンド:
-- Hono（TypeScript, Node.js）
+- Turbopackで構築
 - データ永続化なし（全員退出で部屋情報クリア、メモリ管理）
 - API設計はRESTベース、Swagger（swagger.yaml）で仕様管理
-
-### ローカル環境での起動
-```bash
-pnpm install --filter ./client --frozen-lockfile
-pnpm install --filter ./server --frozen-lockfile
-pnpm --filter ./server dev
-```
 ## 🔗 API設計（サマリ）
 | エンドポイント                   | 概要     | メソッド | 主なレスポンス                                             |
 | ------------------------- | ------ | ---- | --------------------------------------------------- |
