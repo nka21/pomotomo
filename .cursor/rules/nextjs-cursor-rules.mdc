@@ -1,0 +1,339 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Next.js Container-First Development Rules
+
+## Core Development Philosophy
+- Container-first design: Always start with Container Components structure, then implement Presentational Components
+- Maximize Next.js capabilities: Leverage App Router, Server Components, and built-in optimizations
+- High cohesion, low coupling: Create modular, maintainable code with clear separation of concerns
+- Type-first development: Use TypeScript strictly for better developer experience and code quality
+
+## Architecture Patterns
+
+### Container/Presentational Pattern (Container-First)
+1. **Design Phase**: Start with Container Components tree structure only
+2. **Implementation Phase**:
+   - Implement Container Components first
+   - Extract Presentational Components later
+   - Apply Composition pattern from the beginning
+
+```tsx
+// Example: Blog post page structure
+export default async function Page({ params }: { params: Promise<{ postId: string }> }) {
+  const { postId } = await params
+
+  return (
+    <>
+      <PostContainer postId={postId} />
+      <CommentsContainer postId={postId} />
+    </>
+  )
+}
+
+async function PostContainer({ postId }: { postId: string }) {
+  const post = await getPost(postId)
+
+  return (
+    <PostPresentation post={post}>
+      <UserProfileContainer id={post.userId} />
+    </PostPresentation>
+  )
+}
+```
+
+### Component Hierarchy
+- **Server Components (Container)**: Data fetching, business logic, default choice
+- **Client Components**: Only when necessary (event handlers, browser APIs, state management)
+- **Presentational Components**: UI rendering, receives data via props, composable via children
+
+## Directory Structure (Container-First)
+
+```
+app/
+├── (route-segment)/
+│   ├── page.tsx
+│   ├── layout.tsx
+│   ├── _containers/
+│   │   ├── post-list/
+│   │   │   ├── index.tsx      # Export Container Components
+│   │   │   ├── container.tsx  # Server Component with data logic
+│   │   │   ├── presentation.tsx # UI Component
+│   │   │   └── types.ts
+│   │   └── user-profile/
+│   │       ├── index.tsx
+│   │       ├── container.tsx
+│   │       └── presentation.tsx
+│   ├── _components/           # Shared Client Components
+│   ├── _lib/                 # Utility functions
+│   └── _types/               # Shared types
+```
+
+## Code Style & Conventions
+
+### Naming Conventions
+- **PascalCase**: Components, Types, Interfaces
+- **kebab-case**: Directory names (`user-profile/`), file names (`user-profile.tsx`)
+- **camelCase**: Variables, functions, props, hooks
+- **UPPERCASE**: Environment variables, constants
+
+### Specific Patterns
+- Event handlers: `handleClick`, `handleSubmit`
+- Boolean variables: `isLoading`, `hasError`, `canSubmit`
+- Custom hooks: `useAuth`, `useForm`
+
+### Code Formatting
+- Use tabs for indentation
+- Double quotes for strings
+- Strict equality (`===`) always
+- Line length: 100 characters max
+- Trailing commas in multiline structures
+- Avoid default exports and use named exports
+
+## Next.js Best Practices
+
+### App Router Utilization
+- Use App Router for all routing
+- Leverage Server Components by default
+- Use URL query parameters for server state management
+- Implement proper metadata management with Metadata API
+
+### Built-in Components
+```tsx
+import Image from 'next/image'      // Optimized images
+import Link from 'next/link'        // Client-side navigation
+import { Suspense } from 'react'    // Loading states
+```
+
+### Server vs Client Components
+- **Server Components (default)**: Data fetching, SEO, performance
+- **Client Components (`'use client'`)**: Only when needed for:
+  - Event listeners (`onClick`, `onChange`)
+  - Browser APIs (`localStorage`, `window`)
+  - React state (`useState`, `useEffect`)
+  - Client-side libraries
+
+### Data Fetching Patterns
+```tsx
+// Server Component - preferred
+async function PostContainer({ postId }: { postId: string }) {
+  const post = await getPost(postId) // Direct async/await
+  return <PostPresentation post={post} />
+}
+
+// Client Component - when necessary
+'use client'
+function ClientDataComponent() {
+  const [data, setData] = useState(null)
+  // Use SWR, React Query, or native fetch
+}
+```
+
+## TypeScript Implementation
+
+### Strict Configuration
+- Enable strict mode in `tsconfig.json`
+- Prefer `type` over `interface` for defining object structures
+- Use `type` for unions, primitives, and computed types
+- Use `interface` only when you explicitly need declaration merging or class implementation
+
+### Type Patterns
+```tsx
+// Component Props
+type PostPresentationProps = {
+  post: Post
+  children?: React.ReactNode
+};
+
+// Container Props (minimal)
+type PostContainerProps = {
+  postId: string
+};
+
+// Use generics for reusable patterns
+type ContainerProps<T> = {
+  id: string
+  children?: (data: T) => React.ReactNode
+};
+```
+
+### Utility Types Usage
+- `Partial<T>` for optional properties
+- `Pick<T, K>` for selecting specific properties
+- `Omit<T, K>` for excluding properties
+- Type guards for runtime safety
+
+## Styling with Tailwind CSS
+
+### Design Principles
+- Mobile-first responsive design
+- Consistent spacing scale (4, 8, 16, 24, 32px pattern)
+- Accessible color contrast ratios
+
+### Tailwind Usage
+```tsx
+// Responsive design
+<div className="w-full md:w-1/2 lg:w-1/3">
+
+// Dark mode
+<div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+
+// Component composition
+<div className="flex items-center space-x-4 p-4 rounded-lg border">
+```
+
+### Custom CSS Variables (when needed)
+```css
+:root {
+  --color-primary: theme('colors.blue.600');
+  --color-primary-dark: theme('colors.blue.800');
+  --spacing-section: theme('spacing.16');
+}
+```
+
+## State Management Strategy
+
+### Local State (Component Level)
+- `useState` for simple state
+- `useReducer` for complex state logic
+- `useContext` for component tree sharing
+
+### Global State (Application Level)
+- Use TanStack Query for remote data management
+- Automatic caching, background refetching, and request deduplication
+- Prefer colocated queries inside components or custom hooks
+- Use `queryKey` patterns to organize cache
+- Avoid redundant global state unless necessary
+
+```tsx
+export function usePost(postId: string) {
+  return useQuery({
+    queryKey: ['post', postId],
+    queryFn: () => fetchPostById(postId),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+```
+
+## Error Handling & Validation
+
+### Form Validation
+- Use Zod for schema validation
+- React Hook Form for form management
+- Type-safe form handling
+
+```tsx
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8)
+})
+
+type FormData = z.infer<typeof schema>
+```
+
+### Error Boundaries
+- Implement error boundaries for React component trees
+- User-friendly fallback UIs
+- External error logging (Sentry, etc.)
+
+## Performance Optimization
+
+### React Patterns
+- Use `React.memo()` strategically
+- `useCallback` for stable references
+- `useMemo` for expensive computations
+- Avoid inline function definitions in JSX
+
+### Next.js Optimizations
+- Dynamic imports for code splitting
+- Proper `key` props in lists (never use index)
+- Image optimization with Next.js Image component
+- Route-based code splitting automatically
+
+## Testing Strategy
+
+### Unit Testing
+- Jest + React Testing Library
+- Arrange-Act-Assert patterns
+- Mock external dependencies
+- Focus on user behavior over implementation
+
+### Integration Testing
+- Test complete user workflows
+- Proper setup/teardown
+- Test accessibility features
+
+## Accessibility Requirements
+
+### Core Standards
+- Semantic HTML structure
+- Proper ARIA attributes
+- Keyboard navigation support
+- Focus management
+- Color contrast compliance (WCAG 2.1 AA)
+- Logical heading hierarchy
+
+### Implementation
+```tsx
+// Semantic HTML
+<main role="main">
+  <h1>Page Title</h1>
+  <nav aria-label="Main navigation">
+    <ul role="list">
+      <li><Link href="/about">About</Link></li>
+    </ul>
+  </nav>
+</main>
+
+// ARIA attributes
+<button
+  aria-expanded={isOpen}
+  aria-controls="dropdown-menu"
+  onClick={toggleDropdown}
+>
+  Menu
+</button>
+```
+
+## Security Practices
+
+- Input sanitization (DOMPurify for HTML content)
+- Proper authentication patterns
+- Environment variable security
+- XSS prevention
+
+## Code Quality Guidelines
+
+### Cohesion & Coupling
+- **High Cohesion**: Single responsibility per component/function
+- **Low Coupling**: Minimal dependencies between modules
+- **Clear Interfaces**: Well-defined props and return types
+- **Composition over Inheritance**: Use composition patterns
+
+### Documentation
+- JSDoc for public APIs
+- Clear, concise descriptions
+- Type annotations in TypeScript
+- README files for complex features
+
+### Code Review Checklist
+- [ ] Container-first pattern followed?
+- [ ] Server Components used when possible?
+- [ ] Proper TypeScript types defined?
+- [ ] Accessibility requirements met?
+- [ ] Performance considerations addressed?
+- [ ] Error handling implemented?
+- [ ] Tests written and passing?
+
+## Implementation Workflow
+
+1. **Planning**: Design Container Component tree structure
+2. **Container Implementation**: Server Components with data logic
+3. **Presentational Implementation**: UI components with composition
+4. **Iteration**: Refactor and optimize based on requirements
+5. **Testing**: Unit and integration tests
+6. **Documentation**: Update documentation and types
+
+Remember: The goal is maintainable, performant, and accessible applications that leverage Next.js capabilities while following Container-first design principles.

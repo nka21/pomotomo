@@ -1,0 +1,5 @@
+{
+	"cursor.experimental.nextjs.enabled": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true
+}
