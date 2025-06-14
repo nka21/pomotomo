@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"esbenp.prettier-vscode", // prettier
+		"bradlc.vscode-tailwindcss", // tailwindcss
+		"austenc.tailwind-docs", // tailwindcssのドキュメントを参照するのに使う
+		"aaron-bond.better-comments", // コメントの色を変える
+		"oderwat.indent-rainbow" // インデントの色を変える
+	]
+}
