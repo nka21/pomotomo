@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/app/_lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function GET(request: Request) {
 	// 本番環境では完全に無効化
