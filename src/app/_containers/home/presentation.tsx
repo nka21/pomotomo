@@ -28,7 +28,10 @@ export const HomePresentation = memo((props: HomePresentationProps) => {
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-between bg-gradient-to-br from-pink-50 to-red-50 p-4 pt-[24vh]">
-            <HomeContent onStartWork={handleStartWork} ref={startButtonRef} />
+            <HomeContent
+                onStartWork={handleStartWork}
+                modalTriggerRef={startButtonRef}
+            />
             <RoomInputModal
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
