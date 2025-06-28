@@ -41,6 +41,7 @@ export const Modal = memo((props: ModalProps) => {
             ref={dialogRef}
             className="min-h-screen w-full max-w-none bg-transparent p-0 backdrop:bg-black/50"
             onClose={onClose}
+            role="dialog"
         >
             <div
                 onClick={handleBackdropClick}
