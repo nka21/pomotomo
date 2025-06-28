@@ -6,11 +6,11 @@ import logo from "@/assets/logo.png";
 
 type HomeContentProps = {
     onStartWork: () => void;
-    ref: React.RefObject<HTMLButtonElement | null>;
+    buttonRef: React.RefObject<HTMLButtonElement | null>;
 };
 
 export const HomeContent = memo((props: HomeContentProps) => {
-    const { onStartWork, ref } = props;
+    const { onStartWork, buttonRef } = props;
 
     return (
         <>
@@ -30,7 +30,7 @@ export const HomeContent = memo((props: HomeContentProps) => {
                 </p>
                 <button
                     onClick={onStartWork}
-                    ref={ref} // モーダルの連続開閉対策
+                    ref={buttonRef}
                     className="w-full max-w-xs transform cursor-pointer rounded-full bg-red-500 px-8 py-4 text-lg font-bold text-white shadow-lg transition-colors duration-200 hover:scale-105 hover:bg-red-600"
                 >
                     作業を開始する
