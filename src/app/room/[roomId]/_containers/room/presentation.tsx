@@ -82,7 +82,7 @@ export const RoomPresentation = memo((props: RoomPresentationProps) => {
 				{/* 退出ボタン */}
 				<button
 					onClick={handleExit}
-					className="mt-8 flex items-center space-x-2 rounded-full bg-white px-8 py-4 text-gray-700 shadow-sm transition-shadow hover:shadow-md"
+					className="mt-8 flex items-center space-x-2 rounded-full bg-white px-8 py-4 text-gray-700 shadow-sm transition-shadow hover:shadow-md cursor-pointer"
 				>
 					<svg
 						className="h-5 w-5"
