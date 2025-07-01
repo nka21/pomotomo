@@ -95,7 +95,7 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
                         onClick={handleSubmit}
                         disabled={!roomName.trim() || isPending}
                     >
-                        // TODO: ローディングアニメーションを追加
+                        {/* TODO: ローディングアニメーションを追加 */}
                         {isPending ? "作成中..." : "OK"}
                     </Button>
                 </div>
