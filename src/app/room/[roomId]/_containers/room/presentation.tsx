@@ -29,7 +29,7 @@ export const RoomPresentation = memo((props: RoomPresentationProps) => {
 	}, []);
 
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-pink-50 to-red-50 p-4">
+		<div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
 			<div className="flex flex-col items-center space-y-8">
 				{/* ステータスバッジ */}
 				<div className="flex items-center space-x-2 rounded-full bg-white px-6 py-3 shadow-sm">
@@ -70,7 +70,7 @@ export const RoomPresentation = memo((props: RoomPresentationProps) => {
 							</svg>
 							<span className="text-2xl font-bold">{participantCount}</span>
 						</div>
-						<span className="text-sm">人が一緒に作業中</span>
+						<span className="text-sm">人が作業中</span>
 					</div>
 				</div>
 
