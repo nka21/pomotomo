@@ -10,10 +10,11 @@ type RoomInputModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (roomName: string) => void;
+    isPending?: boolean;
 };
 
 export const RoomInputModal = memo((props: RoomInputModalProps) => {
-    const { isOpen, onClose, onSubmit } = props;
+    const { isOpen, onClose, onSubmit, isPending = false } = props;
 
     const [roomName, setRoomName] = useState("");
 
@@ -21,12 +22,10 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
      * 部屋名を入力してOKボタンを押したときの処理
      */
     const handleSubmit = useCallback(() => {
-        if (roomName.trim()) {
+        if (roomName.trim() && !isPending) {
             onSubmit(roomName.trim());
-            setRoomName("");
-            onClose();
         }
-    }, [roomName, onSubmit, onClose]);
+    }, [roomName, isPending]);
 
     /**
      * キャンセルボタンを押したときの処理
@@ -48,15 +47,12 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
      */
     const handleKeyDown = useCallback(
         (e: KeyboardEvent<HTMLInputElement>) => {
-            // Enterキーが押され、かつOKボタンが押せる状態（入力が空でない）の場合
-            if (e.key === "Enter" && roomName.trim()) {
-                // デフォルトのイベント（あれば）をキャンセル
+            if (e.key === "Enter") {
                 e.preventDefault();
-                // OKボタンの処理を呼び出す
                 handleSubmit();
             }
         },
-        [roomName, handleSubmit],
+        [handleSubmit],
     );
 
     return (
@@ -77,7 +73,8 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
                         placeholder="部屋名を入力（20文字まで）"
                         maxLength={MAX_LENGTH}
                         onKeyDown={handleKeyDown}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:border-transparent focus:ring-2 focus:ring-red-500 focus:outline-none"
+                        disabled={isPending}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:border-transparent focus:ring-2 focus:ring-red-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                         autoFocus
                     />
                     <div className="mt-2 text-right text-sm text-gray-500">
@@ -86,15 +83,20 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
                 </div>
 
                 <div className="flex gap-3">
-                    <Button variant="secondary" onClick={handleCancel}>
+                    <Button 
+                        variant="secondary" 
+                        onClick={handleCancel}
+                        disabled={isPending}
+                    >
                         キャンセル
                     </Button>
                     <Button
                         variant="primary"
                         onClick={handleSubmit}
-                        disabled={!roomName.trim()}
+                        disabled={!roomName.trim() || isPending}
                     >
-                        OK
+                        // TODO: ローディングアニメーションを追加
+                        {isPending ? "作成中..." : "OK"}
                     </Button>
                 </div>
             </div>
