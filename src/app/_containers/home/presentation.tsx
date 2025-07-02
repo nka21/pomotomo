@@ -3,12 +3,19 @@
 import { memo, useCallback, useRef, useState } from "react";
 import { RoomInputModal } from "./room-input-modal";
 import { HomeContent } from "./home-content";
+import { useCreateRoom } from "./use-create-room";
 
 type HomePresentationProps = {};
 
 export const HomePresentation = memo((props: HomePresentationProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const startButtonRef = useRef<HTMLButtonElement>(null);
+    
+    const handleSuccess = useCallback(() => {
+        setIsModalOpen(false);
+    }, []);
+    
+    const { mutate: createRoom, isPending } = useCreateRoom(handleSuccess);
 
     const handleStartWork = useCallback(() => {
         setIsModalOpen(true);
@@ -22,8 +29,7 @@ export const HomePresentation = memo((props: HomePresentationProps) => {
     }, []);
 
     const handleRoomSubmit = useCallback((roomName: string) => {
-        console.log("Room name:", roomName);
-        // TODO: ここで部屋に参加する処理を実装
+        createRoom(roomName);
     }, []);
 
     return (
@@ -36,6 +42,7 @@ export const HomePresentation = memo((props: HomePresentationProps) => {
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
                 onSubmit={handleRoomSubmit}
+                isPending={isPending}
             />
         </div>
     );

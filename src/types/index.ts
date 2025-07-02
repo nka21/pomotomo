@@ -1,79 +1,78 @@
+import type { Room, Timer } from "./database";
+
 /**
  * タイマーのフェーズ
- * - work: 作業時間 25分
- * - short_break: 短い休憩時間 5分
- * - long_break: 長い休憩時間 15分
+ * work: 作業（25分）
+ * short_break: 短い休憩（5分）
+ * long_break: 長い休憩（15分、4サイクルごと）
  */
-export type TimerPhase = 'work' | 'short_break' | 'long_break'
+export type TimerPhase = Timer["phase"];
 
 /**
- * タイマー情報
- * - phase: タイマーのフェーズ
- * - startedAt: タイマーが開始された時刻
- * - cycle: タイマーのサイクル数
- * - remainingTime: タイマーの残り時間
+ * クライアント側のタイマー状態
+ * データベースの情報に加えて、計算された値を含む
  */
-export type TimerState = {
-	phase: TimerPhase
-	startedAt: string
-	cycle: number
-	remainingTime: number // ミリ秒
-}
-
-/**
- * 部屋情報
- */
-export type RoomState = {
-	id: string
-	name: string
-	createdAt: string
-}
+export type ClientTimerState = Timer & {
+	remainingTime: number; // ミリ秒
+	progress: number; // 0-100のパーセンテージ
+};
 
 /**
  * 部屋参加者情報
- * - id: 参加者のID
- * - joinedAt: 参加者が部屋に参加した時刻
+ * リアルタイムで管理される情報
  */
 export type RoomParticipant = {
-	id: string
-	joinedAt: string
-}
+	id: string;
+	joinedAt: string;
+};
 
 /**
- * 部屋作成レスポンス
- * - roomId: 部屋のID
- * - roomName: 部屋の名前
- * - isNew: 部屋が新規作成されたかどうか
+ * クライアント側の部屋状態
+ * データベース情報 + リアルタイム情報
+ */
+export type ClientRoomState = Room & {
+	participants: RoomParticipant[];
+	currentTimer?: ClientTimerState;
+};
+
+/**
+ * API: 部屋作成レスポンス
  */
 export type CreateRoomResponse = {
-	roomId: string
-	roomName: string
-	isNew: boolean
-}
+	room: Room;
+};
 
 /**
- * 部屋情報取得レスポンス
- * - exists: 部屋が存在するかどうか
- * - participantsCount: 部屋に参加している人数
+ * API: 部屋情報取得レスポンス
  */
 export type RoomInfoResponse = {
-	exists: boolean
-	participantsCount: number
-}
+	room: Room;
+	timer: Timer | null;
+	participantsCount: number;
+};
 
 /**
- * WebSocket Event
+ * WebSocket: タイマー状態更新イベント
  */
-export type TimerStateEvent = {
-	type: 'TIMER_STATE'
-	payload: TimerState
-}
+export type TimerUpdateEvent = {
+	type: "TIMER_UPDATE";
+	payload: Timer;
+};
 
 /**
- * WebSocket Event
+ * WebSocket: 参加者の出入りイベント
  */
 export type PresenceEvent = {
-	type: 'PRESENCE'
-	event: 'sync' | 'join' | 'leave'
-	payload: RoomParticipant[]
-}
+	type: "PRESENCE";
+	event: "sync" | "join" | "leave";
+	payload: RoomParticipant[];
+};
+
+/**
+ * タイマーの設定値（定数）
+ */
+export const TIMER_DURATIONS = {
+	work: 25 * 60 * 1000, // 25分
+	short_break: 5 * 60 * 1000, // 5分  
+	long_break: 15 * 60 * 1000, // 15分
+} as const;
