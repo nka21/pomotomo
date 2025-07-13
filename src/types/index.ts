@@ -13,8 +13,8 @@ export type TimerPhase = Timer["phase"];
  * データベースの情報に加えて、計算された値を含む
  */
 export type ClientTimerState = Timer & {
-	remainingTime: number; // ミリ秒
-	progress: number; // 0-100のパーセンテージ
+    remainingTime: number; // ミリ秒
+    progress: number; // 0-100のパーセンテージ
 };
 
 /**
@@ -22,8 +22,8 @@ export type ClientTimerState = Timer & {
  * リアルタイムで管理される情報
  */
 export type RoomParticipant = {
-	id: string;
-	joinedAt: string;
+    id: string;
+    joinedAt: string;
 };
 
 /**
@@ -31,48 +31,48 @@ export type RoomParticipant = {
  * データベース情報 + リアルタイム情報
  */
 export type ClientRoomState = Room & {
-	participants: RoomParticipant[];
-	currentTimer?: ClientTimerState;
+    participants: RoomParticipant[];
+    currentTimer?: ClientTimerState;
 };
 
 /**
- * API: 部屋作成レスポンス
+ * API: 部屋参加時のレスポンス（作成して参加 or 既存部屋に参加）
  */
-export type CreateRoomResponse = {
-	room: Room;
+export type JoinedRoomResponse = {
+    room: Room;
 };
 
 /**
  * API: 部屋情報取得レスポンス
  */
 export type RoomInfoResponse = {
-	room: Room;
-	timer: Timer | null;
-	participantsCount: number;
+    room: Room;
+    timer: Timer | null;
+    participantsCount: number;
 };
 
 /**
  * WebSocket: タイマー状態更新イベント
  */
 export type TimerUpdateEvent = {
-	type: "TIMER_UPDATE";
-	payload: Timer;
+    type: "TIMER_UPDATE";
+    payload: Timer;
 };
 
 /**
  * WebSocket: 参加者の出入りイベント
  */
 export type PresenceEvent = {
-	type: "PRESENCE";
-	event: "sync" | "join" | "leave";
-	payload: RoomParticipant[];
+    type: "PRESENCE";
+    event: "sync" | "join" | "leave";
+    payload: RoomParticipant[];
 };
 
 /**
  * タイマーの設定値（定数）
  */
 export const TIMER_DURATIONS = {
-	work: 25 * 60 * 1000, // 25分
-	short_break: 5 * 60 * 1000, // 5分  
-	long_break: 15 * 60 * 1000, // 15分
+    work: 25 * 60 * 1000, // 25分
+    short_break: 5 * 60 * 1000, // 5分
+    long_break: 15 * 60 * 1000, // 15分
 } as const;

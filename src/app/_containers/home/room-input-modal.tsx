@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 
 const MAX_LENGTH = 20;
 
+// ローディングアニメーションコンポーネント
+const LoadingSpinner = () => (
+    <div className="flex items-center justify-center">
+        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+    </div>
+);
+
 type RoomInputModalProps = {
     isOpen: boolean;
     onClose: () => void;
@@ -74,7 +81,7 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
                         maxLength={MAX_LENGTH}
                         onKeyDown={handleKeyDown}
                         disabled={isPending}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:border-transparent focus:ring-2 focus:ring-red-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-800 focus:border-transparent focus:ring-2 focus:ring-red-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100"
                         autoFocus
                     />
                     <div className="mt-2 text-right text-sm text-gray-500">
@@ -83,8 +90,8 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
                 </div>
 
                 <div className="flex gap-3">
-                    <Button 
-                        variant="secondary" 
+                    <Button
+                        variant="secondary"
                         onClick={handleCancel}
                         disabled={isPending}
                     >
@@ -95,8 +102,7 @@ export const RoomInputModal = memo((props: RoomInputModalProps) => {
                         onClick={handleSubmit}
                         disabled={!roomName.trim() || isPending}
                     >
-                        {/* TODO: ローディングアニメーションを追加 */}
-                        {isPending ? "作成中..." : "OK"}
+                        {isPending ? <LoadingSpinner /> : "OK"}
                     </Button>
                 </div>
             </div>
