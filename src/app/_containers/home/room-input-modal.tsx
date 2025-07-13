@@ -8,8 +8,12 @@ const MAX_LENGTH = 20;
 
 // ローディングアニメーションコンポーネント
 const LoadingSpinner = () => (
-    <div className="flex items-center justify-center">
-        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+    <div
+        className="flex items-center justify-center"
+        role="status"
+        aria-label="Loading"
+    >
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
     </div>
 );
 
