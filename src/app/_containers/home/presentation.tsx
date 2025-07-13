@@ -3,19 +3,20 @@
 import { memo, useCallback, useRef, useState } from "react";
 import { RoomInputModal } from "./room-input-modal";
 import { HomeContent } from "./home-content";
-import { useCreateRoom } from "./use-create-room";
+import { useJoinOrCreateRoom } from "./use-join-or-create-room";
 
 type HomePresentationProps = {};
 
 export const HomePresentation = memo((props: HomePresentationProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const startButtonRef = useRef<HTMLButtonElement>(null);
-    
+
     const handleSuccess = useCallback(() => {
         setIsModalOpen(false);
     }, []);
-    
-    const { mutate: createRoom, isPending } = useCreateRoom(handleSuccess);
+
+    const { mutate: joinOrCreateRoom, isPending } =
+        useJoinOrCreateRoom(handleSuccess);
 
     const handleStartWork = useCallback(() => {
         setIsModalOpen(true);
@@ -28,9 +29,12 @@ export const HomePresentation = memo((props: HomePresentationProps) => {
         }
     }, []);
 
-    const handleRoomSubmit = useCallback((roomName: string) => {
-        createRoom(roomName);
-    }, []);
+    const handleRoomSubmit = useCallback(
+        (roomName: string) => {
+            joinOrCreateRoom(roomName);
+        },
+        [joinOrCreateRoom],
+    );
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-between bg-gradient-to-br from-pink-50 to-red-50 p-4 pt-[24vh]">
